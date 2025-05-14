@@ -1,0 +1,16 @@
+services:
+  dns-updater:
+    image: dns-updater:latest
+    build:
+      context: .
+    container_name: dns-updater
+    restart: always
+    environment:
+      MYDNS_USERNAME: ${MYDNS_USERNAME}
+      MYDNS_PASSWORD: ${MYDNS_PASSWORD}
+      WEBHOOK: ${WEBHOOK}
+      CHECK_INTERVAL: ${CHECK_INTERVAL:-60}
+      NOTIFY_INTERVAL: ${NOTIFY_INTERVAL:-3600}
+      IP_CHECK_URL: ${IP_CHECK_URL:-"http://checkip.amazonaws.com"}
+    volumes:
+      - .dns-updater:/app/data
