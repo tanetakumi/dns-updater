@@ -10,7 +10,7 @@ function webhook() {
     if [ -z "$WEBHOOK" ]; then
         echo "WEBHOOK is not set. Skipping webhook notification."
     else
-        curl -s -H "Accept: application/json" -H "Content-type: application/json" -X POST -d "{\"content\":\"[$(date +%H:%M:%S)] ${1}\"}" "$WEBHOOK"
+        curl -s -H "Accept: application/json" -H "Content-type: application/json" -X POST -d "{\"content\":\"[$(TZ="Asia/Tokyo" date +%H:%M:%S)] ${1}\"}" "$WEBHOOK"
     fi
 }
 
@@ -33,7 +33,7 @@ echo "Check IP URL: $URL"
 webhook "mydns updater has started. Domain: $DOMAIN"
 
 ## ループ処理
-COUNTER=1
+COUNTER=0
 
 while true
 do
@@ -62,8 +62,6 @@ do
         echo "⚠️ Invalid IP address detected - Current IP: ${CURRENT_IP}, Domain IP: ${DOMAIN_IP}"
         webhook "⚠️ Invalid IP detected - Current IP: ${CURRENT_IP}, Domain IP: ${DOMAIN_IP}"
     fi
-
-    ((COUNTER++))
     
     # 1時間に約一回（240 * 15秒 = 3600秒 = 1時間）
     if [ "$((COUNTER % 240))" -eq 0 ]; then
@@ -71,4 +69,6 @@ do
         webhook "Hourly report - Current IP: ${CURRENT_IP}, Domain IP (${DOMAIN}): ${DOMAIN_IP}"
         mydns
     fi
+
+    ((COUNTER++))
 done
