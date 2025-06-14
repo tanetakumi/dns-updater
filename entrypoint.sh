@@ -34,6 +34,8 @@ webhook "mydns updater has started. Domain: $DOMAIN"
 
 ## ループ処理
 COUNTER=0
+# 初期フラグ（true: 一致中、false: 不一致中）
+IP_MATCHED=true
 
 while true
 do
@@ -55,8 +57,13 @@ do
             webhook "⚠️ IP mismatch detected! Current IP: ${CURRENT_IP}, Domain IP (${DOMAIN}): ${DOMAIN_IP}"
             echo "Updating MyDNS due to mismatch..."
             mydns
+            IP_MATCHED=false
         else
             echo "✅ IP addresses match"
+            if [ "$IP_MATCHED" = false ]; then
+                webhook "✅ IP addresses are now matched again. Current IP: ${CURRENT_IP}, Domain IP: ${DOMAIN_IP}"
+                IP_MATCHED=true
+            fi
         fi
     else
         echo "⚠️ Invalid IP address detected - Current IP: ${CURRENT_IP}, Domain IP: ${DOMAIN_IP}"
